@@ -1,0 +1,49 @@
+:root {
+  /* surfaces */
+  --bg: #070913;
+  --surface: #11131d;
+  --surface-lowest: #0b0e18;
+  --surface-low: #191b26;
+  --surface-container: #1d1f2a;
+  --surface-high: #272935;
+  --surface-highest: #323440;
+
+  /* text */
+  --on-surface: #e1e1f1;
+  --on-surface-variant: #b9cacb;
+  --muted: #94a3b8;
+
+  /* neon */
+  --cyan: #00f0ff;
+  --cyan-fixed: #7df4ff;
+  --ice: #dbfcff;
+  --purple: #a855f7;
+  --lavender: #ddb7ff;
+  --lavender-soft: #f0dbff;
+  --purple-deep: #6f00be;
+  --magenta: #ec4899;
+  --yellow: #eab308;
+  --blue: #3b82f6;
+
+  /* glass */
+  --glass: rgba(12, 15, 36, 0.75);
+  --glass-strong: rgba(18, 23, 53, 0.9);
+  --glass-border: rgba(0, 240, 255, 0.18);
+
+  /* glows */
+  --glow-cyan: 0 0 16px rgba(0, 240, 255, 0.45), 0 0 2px rgba(0, 240, 255, 0.9);
+  --glow-magenta: 0 0 16px rgba(236, 72, 153, 0.45), 0 0 2px rgba(236, 72, 153, 0.9);
+  --glow-purple: 0 0 16px rgba(168, 85, 247, 0.45), 0 0 2px rgba(168, 85, 247, 0.9);
+
+  /* type */
+  --font-head: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --font-body: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* shape + spacing */
+  --r-sm: 0.25rem;
+  --r: 0.5rem;
+  --r-lg: 1rem;
+  --r-xl: 1.5rem;
+  --r-full: 9999px;
+}

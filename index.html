@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#070913">
+  <title>Brick Breaker — Neon Kinetic Arcade</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/screens.css">
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <header class="app-header">
+    <div class="app-header__inner">
+      <div class="brand"><span class="icon icon--fill">sports_esports</span><span>BRICK BREAKER</span></div>
+      <span class="chip chip--purple">v0.1 · Level 1</span>
+    </div>
+  </header>
+
+  <main class="app">
+
+    <!-- MAIN MENU -->
+    <section id="screen-menu" class="screen is-active" aria-label="Main menu">
+      <div class="menu-status">
+        <span class="chip"><span class="ping"></span>SYSTEM READY</span>
+        <span class="chip chip--purple"><span class="icon">bolt</span>SECTOR 01</span>
+      </div>
+
+      <div class="hero">
+        <h1 class="hero__title">BRICK BREAKER</h1>
+        <p class="hero__tag"><span class="dot dot--cyan">•</span> Break the Bricks. Beat the Score. <span class="dot dot--purple">•</span></p>
+      </div>
+
+      <!-- Decorative animated preview (pure CSS, no JS) -->
+      <div class="preview" aria-hidden="true">
+        <div class="preview__top">
+          <span class="chip"><span class="icon">radar</span>DEMO</span>
+          <span class="chip chip--purple"><span class="icon">speed</span>ARCADE</span>
+        </div>
+        <div class="preview__field">
+          <div class="demo-bricks">
+            <div class="demo-row demo-row--2"><i class="b-cyan"></i><i class="b-lav"></i></div>
+            <div class="demo-row demo-row--12"><i class="b-pink"></i><i class="b-blue"></i></div>
+            <div class="demo-row demo-row--3"><i class="b-dim1"></i><i class="b-dim2"></i><i class="b-dim3"></i></div>
+          </div>
+          <span class="demo-ball"></span>
+          <span class="demo-paddle"></span>
+        </div>
+        <div class="preview__foot">
+          <span class="foot-left"><span class="icon">touch_app</span>KEYBOARD · MOUSE · TOUCH</span>
+          <span>NEO-PHYSICS</span>
+        </div>
+      </div>
+
+      <div class="stat-dock">
+        <div class="stat stat--cyan">
+          <span class="stat__label"><span class="icon">military_tech</span>BEST</span>
+          <b id="stat-best" class="stat__value">000,000</b>
+          <span class="stat__sub">POINTS</span>
+        </div>
+        <div class="stat stat--purple">
+          <span class="stat__label"><span class="icon">videogame_asset</span>GAMES</span>
+          <b id="stat-games" class="stat__value">0</b>
+          <span class="stat__sub">PLAYED</span>
+        </div>
+        <div class="stat stat--magenta">
+          <span class="stat__label"><span class="icon">emoji_events</span>WINS</span>
+          <b id="stat-wins" class="stat__value">0</b>
+          <span class="stat__sub">SECTORS CLEARED</span>
+        </div>
+      </div>
+
+      <div class="menu-actions">
+        <button id="btn-play" class="btn btn--primary btn--hero" data-autofocus>
+          <span class="icon icon--fill">play_arrow</span>
+          <span>PLAY</span>
+          <span class="icon">chevron_right</span>
+        </button>
+        <div class="menu-actions__row">
+          <button id="btn-howto" class="btn btn--ghost btn--sm"><span class="icon">help_outline</span>HOW TO PLAY</button>
+          <button id="btn-settings" class="btn btn--secondary btn--sm"><span class="icon">settings</span>SETTINGS</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- GAME -->
+    <section id="screen-game" class="screen" aria-label="Game">
+      <div class="game-wrap">
+        <div class="hud">
+          <div class="hud__score">
+            <span class="label">SCORE <span class="chip chip--purple chip--tiny">BEST <span id="hud-best">000,000</span></span></span>
+            <output id="hud-score" class="hud__score-value" aria-live="off">000,000</output>
+          </div>
+          <div class="hud__right">
+            <div class="hud__lives">
+              <span class="label">LIVES</span>
+              <div id="hud-lives" class="lives" role="img" aria-label="3 of 3 lives left"></div>
+            </div>
+            <button id="btn-hud-restart" class="icon-btn" aria-label="Restart game" title="Restart (R)"><span class="icon">replay</span></button>
+            <button id="btn-hud-menu" class="icon-btn" aria-label="Main menu" title="Main menu"><span class="icon">home</span></button>
+          </div>
+        </div>
+
+        <div id="arena" class="arena" data-state="idle">
+          <canvas id="game-canvas" aria-label="Brick Breaker game board"></canvas>
+          <div class="launch-hint" aria-hidden="true">SPACE / CLICK / TAP TO LAUNCH</div>
+        </div>
+
+        <p class="controls-hint">
+          <span class="hint-kbd"><span class="k">← → / A D</span> or mouse to move · <span class="k">SPACE</span> launch · <span class="k">R</span> restart</span>
+          <span class="hint-touch">Drag to move · <span class="k">tap</span> to launch</span>
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODALS -->
+
+  <div id="modal-howto" class="modal" data-backdrop-close role="dialog" aria-modal="true" aria-labelledby="howto-title" aria-hidden="true">
+    <div class="card">
+      <header class="card__head">
+        <h2 id="howto-title"><span class="icon">sports_esports</span>TACTICAL BRIEFING</h2>
+        <button class="icon-btn icon-btn--sm" data-close aria-label="Close"><span class="icon">close</span></button>
+      </header>
+      <ul class="tips">
+        <li><span class="icon tip-cyan">keyboard</span><p><b>Keyboard:</b> use <kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd> to slide the paddle.</p></li>
+        <li><span class="icon tip-lav">mouse</span><p><b>Mouse &amp; touch:</b> move the pointer (or drag a finger) over the board to steer the paddle.</p></li>
+        <li><span class="icon tip-pink">rocket_launch</span><p><b>Launch:</b> press <kbd>Space</kbd>, click or tap to fire the ball. Where it lands on the paddle sets its angle.</p></li>
+        <li><span class="icon tip-yellow">flag</span><p><b>Goal:</b> destroy every brick. Let the ball fall and you lose a life — lose all 3 and it's game over. Press <kbd>R</kbd> any time to restart.</p></li>
+      </ul>
+      <button class="btn btn--primary btn--sm" data-close data-autofocus>GOT IT, LET'S BREAK</button>
+    </div>
+  </div>
+
+  <div id="modal-settings" class="modal" data-backdrop-close role="dialog" aria-modal="true" aria-labelledby="settings-title" aria-hidden="true">
+    <div class="card">
+      <header class="card__head">
+        <h2 id="settings-title"><span class="icon">tune</span>CALIBRATION</h2>
+        <button class="icon-btn icon-btn--sm" data-close aria-label="Close"><span class="icon">close</span></button>
+      </header>
+
+      <section class="setting">
+        <div class="setting__row">
+          <label for="set-sens">Keyboard paddle speed</label>
+          <output id="set-sens-val" for="set-sens">1.00x</output>
+        </div>
+        <input id="set-sens" type="range" min="0.5" max="2" step="0.25" value="1">
+        <div class="setting__scale"><span>0.5x Precise</span><span>1.0x Standard</span><span>2.0x Hyper</span></div>
+        <p class="setting__note">Mouse and touch always move the paddle directly. Changes save automatically.</p>
+      </section>
+
+      <div class="card__actions">
+        <button id="btn-settings-reset" class="btn btn--ghost btn--sm">RESET</button>
+        <button class="btn btn--primary btn--sm" data-close data-autofocus>DONE</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-result" class="modal" data-kind="gameover" role="dialog" aria-modal="true" aria-labelledby="result-title" aria-hidden="true">
+    <div class="card card--result">
+      <span class="chip chip--badge"><span class="icon">military_tech</span><span id="result-badge-text">MISSION FAILED</span></span>
+      <h2 id="result-title" class="result__title">GAME OVER</h2>
+      <p id="result-sub" class="result__sub">OUT OF LIVES • GRID COMPROMISED</p>
+
+      <div class="result__score">
+        <span class="label">FINAL SCORE</span>
+        <output id="result-score">000,000</output>
+      </div>
+
+      <div class="result__grid">
+        <div class="stat"><span class="stat__label">BRICKS</span><b id="result-bricks" class="stat__value">0 / 0</b></div>
+        <div class="stat"><span class="stat__label">LIVES LEFT</span><b id="result-lives" class="stat__value">0</b></div>
+        <div class="stat"><span class="stat__label">BEST</span><b id="result-best" class="stat__value">000,000</b></div>
+      </div>
+
+      <button id="btn-result-again" class="btn btn--primary" data-autofocus><span class="icon">replay</span>PLAY AGAIN</button>
+      <button id="btn-result-menu" class="btn btn--ghost btn--sm"><span class="icon">grid_view</span>MAIN MENU</button>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/levels.js"></script>
+  <script src="js/physics.js"></script>
+  <script src="js/paddle.js"></script>
+  <script src="js/ball.js"></script>
+  <script src="js/brick.js"></script>
+  <script src="js/input.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
