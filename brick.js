@@ -8,6 +8,7 @@
     this.alive = true;
   };
 
+  /** Turn a level's layout strings into an array of Brick objects. */
   BB.buildBricks = function (level, cfg, canvasW) {
     var cols = cfg.cols;
     var w = (canvasW - cfg.sidePadding * 2 - cfg.gap * (cols - 1)) / cols;
