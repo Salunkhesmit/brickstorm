@@ -2,6 +2,7 @@
   'use strict';
 
   BB.Storage.load();
+  BB.Audio.init();
 
   var canvas = document.getElementById('game-canvas');
   var input = new BB.Input();
@@ -10,7 +11,8 @@
     input: input,
     renderer: renderer,
     onHud: BB.UI.updateHud,
-    onEnd: BB.UI.showResult
+    onEnd: BB.UI.showResult,
+    onSound: BB.Audio.play
   });
 
   input.attach(canvas);
