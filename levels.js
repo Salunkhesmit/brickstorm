@@ -11,12 +11,61 @@
 
   BB.LEVELS = [
     {
-      name: 'SECTOR 01',
+      name: 'SECTOR 01', speed: 1.0,
       layout: [
         'mmmmmm',
         'pppppp',
         'bbbbbb',
         'cccccc',
+        'tttttt'
+      ]
+    },
+    {
+      name: 'SECTOR 02', speed: 1.1,
+      layout: [
+        '..mm..',
+        '.mppm.',
+        'mppppm',
+        'bbbbbb',
+        '.cccc.',
+        'tttttt'
+      ]
+    },
+    {
+      name: 'SECTOR 03', speed: 1.2,
+      layout: [
+        'm.mm.m',
+        'pppppp',
+        'b.bb.b',
+        'cccccc',
+        't.tt.t',
+        'bbbbbb',
+        '.pppp.'
+      ]
+    },
+    {
+      name: 'SECTOR 04', speed: 1.3,
+      layout: [
+        'mmmmmm',
+        'm.pp.m',
+        'mpbbpm',
+        'pbccbp',
+        'bcttcb',
+        'ct..tc',
+        'cttttc',
+        'tttttt'
+      ]
+    },
+    {
+      name: 'SECTOR 05', speed: 1.4,
+      layout: [
+        'mmmmmm',
+        'pmpmpm',
+        'mpmpmp',
+        'bbbbbb',
+        'b.bb.b',
+        'cccccc',
+        'c.cc.c',
         'tttttt'
       ]
     }
