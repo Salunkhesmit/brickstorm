@@ -5,6 +5,7 @@
     best: 0,
     games: 0,
     wins: 0,
+    muted: false,
     sensitivity: BB.CONFIG.settings.sensitivity.default
   };
   var data = Object.assign({}, defaults);
