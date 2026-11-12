@@ -5,6 +5,7 @@
     clamp: function (v, min, max) { return v < min ? min : (v > max ? max : v); },
     toRad: function (deg) { return deg * Math.PI / 180; },
 
+    /** 42850 -> "042,850" */
     formatScore: function (n) {
       n = Math.max(0, Math.floor(n || 0));
       if (n > 999999) return n.toLocaleString('en-US');
