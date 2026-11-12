@@ -18,12 +18,13 @@
     this.y = paddle.y - this.r - 1;
   };
 
-  /** Fire upward at a small random angle. */
-  BB.Ball.prototype.launch = function () {
+  /** Fire upward at a small random angle. `speed` overrides the default. */
+  BB.Ball.prototype.launch = function (speed) {
     if (!this.attached) return;
+    var s = speed || this.speed;
     var a = (Math.random() * 2 - 1) * this.spread;
-    this.vx = this.speed * Math.sin(a);
-    this.vy = -this.speed * Math.cos(a);
+    this.vx = s * Math.sin(a);
+    this.vy = -s * Math.cos(a);
     this.attached = false;
   };
 })(window.BB = window.BB || {});
