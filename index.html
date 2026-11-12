@@ -4,10 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#070913">
-  <title>Brickstorm — Brick Breaker Arcade Game</title>
+  <title>Brick Breaker — Neon Kinetic Arcade</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" rel="stylesheet">
+
   <link rel="stylesheet" href="tokens.css">
   <link rel="stylesheet" href="base.css">
   <link rel="stylesheet" href="components.css">
@@ -19,7 +20,7 @@
   <header class="app-header">
     <div class="app-header__inner">
       <div class="brand"><span class="icon icon--fill">sports_esports</span><span>BRICK BREAKER</span></div>
-      <span class="chip chip--purple">v0.1 · Level 1</span>
+      <span class="chip chip--purple">v0.2 </span>
     </div>
   </header>
 
@@ -29,7 +30,7 @@
     <section id="screen-menu" class="screen is-active" aria-label="Main menu">
       <div class="menu-status">
         <span class="chip"><span class="ping"></span>SYSTEM READY</span>
-        <span class="chip chip--purple"><span class="icon">bolt</span>SECTOR 01</span>
+        <span class="chip chip--purple"><span class="icon">bolt</span>5 SECTORS</span>
       </div>
 
       <div class="hero">
@@ -37,7 +38,7 @@
         <p class="hero__tag"><span class="dot dot--cyan">•</span> Break the Bricks. Beat the Score. <span class="dot dot--purple">•</span></p>
       </div>
 
-      <!-- Decorative animated preview (pure CSS, no JS) -->
+      <!-- Decorative animated preview -->
       <div class="preview" aria-hidden="true">
         <div class="preview__top">
           <span class="chip"><span class="icon">radar</span>DEMO</span>
@@ -86,6 +87,10 @@
           <button id="btn-howto" class="btn btn--ghost btn--sm"><span class="icon">help_outline</span>HOW TO PLAY</button>
           <button id="btn-settings" class="btn btn--secondary btn--sm"><span class="icon">settings</span>SETTINGS</button>
         </div>
+        <button class="sfx-toggle" data-sound-toggle aria-pressed="true">
+          <span class="icon js-sound-icon">volume_up</span>
+          <span>ARCADE SFX: <b class="js-sound-label">ON</b></span>
+        </button>
       </div>
     </section>
 
@@ -93,17 +98,24 @@
     <section id="screen-game" class="screen" aria-label="Game">
       <div class="game-wrap">
         <div class="hud">
-          <div class="hud__score">
-            <span class="label">SCORE <span class="chip chip--purple chip--tiny">BEST <span id="hud-best">000,000</span></span></span>
-            <output id="hud-score" class="hud__score-value" aria-live="off">000,000</output>
-          </div>
-          <div class="hud__right">
+          <div class="hud__row hud__row--main">
+            <div class="hud__score">
+              <span class="label">SCORE <span class="chip chip--purple chip--tiny">BEST <span id="hud-best">000,000</span></span></span>
+              <output id="hud-score" class="hud__score-value" aria-live="off">000,000</output>
+            </div>
             <div class="hud__lives">
               <span class="label">LIVES</span>
               <div id="hud-lives" class="lives" role="img" aria-label="3 of 3 lives left"></div>
             </div>
-            <button id="btn-hud-restart" class="icon-btn" aria-label="Restart game" title="Restart (R)"><span class="icon">replay</span></button>
-            <button id="btn-hud-menu" class="icon-btn" aria-label="Main menu" title="Main menu"><span class="icon">home</span></button>
+          </div>
+          <div class="hud__row hud__row--tools">
+            <span id="hud-level" class="chip chip--purple chip--level">SECTOR 01 / 05</span>
+            <div class="hud__tools">
+              <button id="btn-hud-pause" class="icon-btn" aria-label="Pause" title="Pause (P)"><span class="icon">pause</span></button>
+              <button class="icon-btn" data-sound-toggle aria-label="Toggle sound" title="Mute (M)"><span class="icon js-sound-icon">volume_up</span></button>
+              <button id="btn-hud-restart" class="icon-btn" aria-label="Restart game" title="Restart (R)"><span class="icon">replay</span></button>
+              <button id="btn-hud-menu" class="icon-btn" aria-label="Main menu" title="Main menu"><span class="icon">home</span></button>
+            </div>
           </div>
         </div>
 
@@ -113,7 +125,7 @@
         </div>
 
         <p class="controls-hint">
-          <span class="hint-kbd"><span class="k">← → / A D</span> or mouse to move · <span class="k">SPACE</span> launch · <span class="k">R</span> restart</span>
+          <span class="hint-kbd"><span class="k">← →</span> move · <span class="k">SPACE</span> launch · <span class="k">P</span> pause · <span class="k">M</span> mute · <span class="k">R</span> restart</span>
           <span class="hint-touch">Drag to move · <span class="k">tap</span> to launch</span>
         </p>
       </div>
@@ -121,7 +133,6 @@
   </main>
 
   <!-- MODALS -->
-
   <div id="modal-howto" class="modal" data-backdrop-close role="dialog" aria-modal="true" aria-labelledby="howto-title" aria-hidden="true">
     <div class="card">
       <header class="card__head">
@@ -132,7 +143,9 @@
         <li><span class="icon tip-cyan">keyboard</span><p><b>Keyboard:</b> use <kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd> to slide the paddle.</p></li>
         <li><span class="icon tip-lav">mouse</span><p><b>Mouse &amp; touch:</b> move the pointer (or drag a finger) over the board to steer the paddle.</p></li>
         <li><span class="icon tip-pink">rocket_launch</span><p><b>Launch:</b> press <kbd>Space</kbd>, click or tap to fire the ball. Where it lands on the paddle sets its angle.</p></li>
-        <li><span class="icon tip-yellow">flag</span><p><b>Goal:</b> destroy every brick. Let the ball fall and you lose a life — lose all 3 and it's game over. Press <kbd>R</kbd> any time to restart.</p></li>
+        <li><span class="icon tip-yellow">bolt</span><p><b>Power-ups:</b> catch falling capsules — <b>WIDE</b> grows your paddle, <b>3-BALL</b> splits every ball, <b>SLOW</b> slows the ball for a while.</p></li>
+        <li><span class="icon tip-cyan">flag</span><p><b>Goal:</b> clear all 5 sectors. Lose every ball and you lose a life; lose all 3 and it's game over.</p></li>
+        <li><span class="icon tip-lav">keyboard_command_key</span><p><b>Shortcuts:</b> <kbd>P</kbd> or <kbd>Esc</kbd> pause, <kbd>M</kbd> mute, <kbd>R</kbd> restart.</p></li>
       </ul>
       <button class="btn btn--primary btn--sm" data-close data-autofocus>GOT IT, LET'S BREAK</button>
     </div>
@@ -162,6 +175,28 @@
     </div>
   </div>
 
+  <div id="modal-pause" class="modal" role="dialog" aria-modal="true" aria-labelledby="pause-title" aria-hidden="true">
+    <div class="card card--result card--pause">
+      <span class="chip chip--badge"><span class="icon">pause_circle</span>TACTICAL PAUSE</span>
+      <h2 id="pause-title" class="result__title">GAME PAUSED</h2>
+      <p id="pause-sub" class="result__sub">SECTOR 01</p>
+
+      <div class="result__grid result__grid--2">
+        <div class="stat"><span class="stat__label">SCORE</span><b id="pause-score" class="stat__value">000,000</b></div>
+        <div class="stat"><span class="stat__label">SECTOR</span><b id="pause-level" class="stat__value">01 / 05</b></div>
+        <div class="stat"><span class="stat__label">TARGETS</span><b id="pause-bricks" class="stat__value">0 / 0</b></div>
+        <div class="stat"><span class="stat__label">LIVES</span><b id="pause-lives" class="stat__value">3 / 3</b></div>
+      </div>
+
+      <button id="btn-resume" class="btn btn--primary" data-autofocus><span class="icon icon--fill">play_arrow</span>RESUME</button>
+      <button id="btn-pause-restart" class="btn btn--secondary btn--sm"><span class="icon">replay</span>RESTART</button>
+      <div class="card__actions">
+        <button id="btn-pause-menu" class="btn btn--ghost btn--sm"><span class="icon">grid_view</span>MAIN MENU</button>
+        <button class="btn btn--ghost btn--sm" data-sound-toggle aria-pressed="true"><span class="icon js-sound-icon">volume_up</span>SOUND: <span class="js-sound-label">ON</span></button>
+      </div>
+    </div>
+  </div>
+
   <div id="modal-result" class="modal" data-kind="gameover" role="dialog" aria-modal="true" aria-labelledby="result-title" aria-hidden="true">
     <div class="card card--result">
       <span class="chip chip--badge"><span class="icon">military_tech</span><span id="result-badge-text">MISSION FAILED</span></span>
@@ -173,9 +208,12 @@
         <output id="result-score">000,000</output>
       </div>
 
-      <div class="result__grid">
-        <div class="stat"><span class="stat__label">BRICKS</span><b id="result-bricks" class="stat__value">0 / 0</b></div>
+      <div class="result__grid result__grid--2">
+        <div class="stat"><span class="stat__label">SECTOR</span><b id="result-level" class="stat__value">01 / 05</b></div>
+        <div class="stat"><span class="stat__label">BRICKS BROKEN</span><b id="result-bricks" class="stat__value">0</b></div>
         <div class="stat"><span class="stat__label">LIVES LEFT</span><b id="result-lives" class="stat__value">0</b></div>
+        <div class="stat"><span class="stat__label">BEST</span><b id="result-best" class="stat__value">000,000</b></div>
+      </div>
         <div class="stat"><span class="stat__label">BEST</span><b id="result-best" class="stat__value">000,000</b></div>
       </div>
 
@@ -187,8 +225,10 @@
   <script src="config.js"></script>
   <script src="utils.js"></script>
   <script src="storage.js"></script>
+  <script src="audio.js"></script>
   <script src="levels.js"></script>
   <script src="physics.js"></script>
+  <script src="powerups.js"></script>
   <script src="paddle.js"></script>
   <script src="ball.js"></script>
   <script src="brick.js"></script>
