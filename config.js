@@ -11,8 +11,8 @@
     paddle: {
       width: 96,
       height: 14,
-      bottomOffset: 44,
-      keyboardSpeed: 560
+      bottomOffset: 44,     // gap between paddle and bottom edge
+      keyboardSpeed: 560    // px/second at 1.0x sensitivity
     },
 
     ball: {
@@ -27,7 +27,9 @@
       height: 22,
       gap: 6,
       sidePadding: 18,
-      topOffset: 56
+      topOffset: 56,
+      blastDamage: 2,            // damage an explosive brick deals to each neighbour
+      blastReach: 1              // neighbour distance in bricks (1 = the 8 around it)
     },
 
     settings: {
@@ -41,10 +43,12 @@
       speedAccel: 900,           // px/s^2 the ball changes speed (smooth slow-ball in/out)
       englishDeg: 10,            // extra paddle-bounce angle when the paddle is moving
       englishRef: 600,           // paddle speed (px/s) that gives the full english
-      speedRamp: { perBrick: 0.004, max: 0.25 }   // ball gets faster as bricks break (resets per life/level)
+      speedRamp: { perBrick: 0.004, max: 0.25 },  // ball gets faster as bricks break (resets per life/level)
+      stallTime: 6,              // seconds a ball may go without touching the paddle or a breakable brick...
+      stallNudgeDeg: [3, 7]      // ...before each wall/steel bounce steepens its angle by this much (prevents endless orbits)
     },
 
-    // Level 2: power-ups 
+    // Level 2: power-ups
     powerups: {
       dropChance: 0.16,          // chance a destroyed brick drops a capsule
       fallSpeed: 150,            // px/s
@@ -54,6 +58,13 @@
       expand: { factor: 1.5, duration: 12 },     // paddle width multiplier, seconds
       slow:   { factor: 0.65, duration: 10 },    // ball speed multiplier, seconds
       paddleGrowSpeed: 260       // px/s the paddle grows / shrinks
+    },
+
+    // Level 3: visual effects
+    effects: {
+      maxParticles: 500,         // hard cap so the game never slows down
+      trailLength: 12,           // ball trail points
+      brickIntro: 0.4            // seconds a brick takes to drop in at level start
     },
 
     // Level 2: transitions
