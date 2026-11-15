@@ -3,7 +3,6 @@
   var clamp = BB.Utils.clamp;
 
   BB.Physics = {
-
     circleRect: function (cx, cy, r, rx, ry, rw, rh) {
       var px = clamp(cx, rx, rx + rw);
       var py = clamp(cy, ry, ry + rh);
@@ -27,6 +26,15 @@
     reflect: function (b, nx, ny) {
       var dot = b.vx * nx + b.vy * ny;
       if (dot < 0) { b.vx -= 2 * dot * nx; b.vy -= 2 * dot * ny; }
+    },
+
+    steepen: function (b, deg) {
+      var s = Math.sqrt(b.vx * b.vx + b.vy * b.vy);
+      if (s === 0 || b.vx === 0) return;
+      var theta = Math.atan2(Math.abs(b.vx), Math.abs(b.vy));
+      theta = Math.max(0, theta - deg * Math.PI / 180);
+      b.vx = (b.vx < 0 ? -1 : 1) * s * Math.sin(theta);
+      b.vy = (b.vy < 0 ? -1 : 1) * s * Math.cos(theta);
     },
 
     speedOf: function (b) { return Math.sqrt(b.vx * b.vx + b.vy * b.vy); },
