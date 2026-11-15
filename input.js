@@ -69,6 +69,7 @@
     return (this.right ? 1 : 0) - (this.left ? 1 : 0);
   };
 
+  /** Latest pointer x (logical units) or null; clears it. */
   BB.Input.prototype.consumePointerX = function () {
     var v = this._px;
     this._px = null;
