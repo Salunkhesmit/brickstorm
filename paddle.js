@@ -13,6 +13,7 @@
     this.reset();
   };
 
+  /** Centre the paddle and snap it back to normal width. */
   BB.Paddle.prototype.reset = function () {
     this.w = this.targetW = this.baseW;
     this.x = (this.canvasW - this.w) / 2;
@@ -22,10 +23,12 @@
     get: function () { return this.x + this.w / 2; }
   });
 
+  /* Put the paddle's centre at x (mouse / touch). */
   BB.Paddle.prototype.moveTo = function (centerX) {
     this.x = clamp(centerX - this.w / 2, 0, this.canvasW - this.w);
   };
 
+  /** Nudge the paddle by dx pixels (keyboard). */
   BB.Paddle.prototype.moveBy = function (dx) {
     this.x = clamp(this.x + dx, 0, this.canvasW - this.w);
   };
