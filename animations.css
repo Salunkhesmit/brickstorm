@@ -1,0 +1,74 @@
+@keyframes screen-in { from { opacity: 0; transform: translateY(14px) scale(0.985); } to { opacity: 1; transform: none; } }
+@keyframes rise      { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes card-pop  { from { opacity: 0; transform: translateY(18px) scale(0.94); } to { opacity: 1; transform: none; } }
+@keyframes title-slam { 0% { opacity: 0; transform: scale(1.5); } 60% { opacity: 1; transform: scale(0.96); } 100% { transform: scale(1); } }
+@keyframes shimmer   { to { background-position: 200% 0; } }
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 24px rgba(var(--accent-rgb), 0.45), 0 4px 12px rgba(0, 0, 0, 0.4); }
+  50%      { box-shadow: 0 0 38px rgba(var(--accent-rgb), 0.75), 0 4px 12px rgba(0, 0, 0, 0.4); }
+}
+@keyframes bump { 0% { transform: scale(1); } 35% { transform: scale(1.14); } 100% { transform: scale(1); } }
+@keyframes life-pop {
+  0%   { transform: scale(2.2); background: #ff2d55; box-shadow: 0 0 16px #ff2d55; opacity: 1; }
+  100% { transform: scale(1); }
+}
+@keyframes hud-hit {
+  0%   { box-shadow: 0 0 0 2px rgba(255, 45, 85, 0.95), 0 0 22px rgba(255, 45, 85, 0.6); transform: translateX(0); }
+  25%  { transform: translateX(-4px); } 50% { transform: translateX(4px); } 75% { transform: translateX(-2px); }
+  100% { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4); transform: none; }
+}
+@keyframes chip-pulse { 0% { transform: scale(1); } 40% { transform: scale(1.18); box-shadow: 0 0 16px rgba(var(--accent-rgb), 0.8); } 100% { transform: scale(1); } }
+@keyframes arena-glow {
+  0%, 100% { box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(var(--accent-rgb), 0.12); }
+  50%      { box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 0 2px rgba(var(--accent-rgb), 0.7), 0 0 30px rgba(var(--accent-rgb), 0.4); }
+}
+@keyframes tile-pop { 50% { transform: scale(1.05); } }
+
+/* screen transitions */
+.screen.is-active { animation: screen-in 0.42s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+/* menu */
+#screen-menu.is-active > * { animation: rise 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+#screen-menu.is-active > :nth-child(2) { animation-delay: 0.06s; }
+#screen-menu.is-active > :nth-child(3) { animation-delay: 0.12s; }
+#screen-menu.is-active > :nth-child(4) { animation-delay: 0.18s; }
+#screen-menu.is-active > :nth-child(5) { animation-delay: 0.24s; }
+
+.hero__title {
+  background-image: linear-gradient(90deg, var(--cyan), var(--ice), var(--lavender), var(--ice), var(--cyan));
+  background-size: 200% 100%; background-repeat: repeat-x;
+  animation: shimmer 9s linear infinite;
+}
+.btn--hero { animation: glow-pulse 2.8s ease-in-out infinite; }
+
+/* modals */
+.modal.is-open .card { animation: card-pop 0.34s cubic-bezier(0.2, 0.9, 0.25, 1.1) both; }
+#modal-result.is-open .result__title { animation: title-slam 0.55s cubic-bezier(0.2, 0.9, 0.25, 1) both 0.1s; }
+#modal-result.is-open .chip--badge { animation: rise 0.45s both 0.05s; }
+.modal.is-open .result__grid .stat { animation: rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.modal.is-open .result__grid .stat:nth-child(1) { animation-delay: 0.30s; }
+.modal.is-open .result__grid .stat:nth-child(2) { animation-delay: 0.38s; }
+.modal.is-open .result__grid .stat:nth-child(3) { animation-delay: 0.46s; }
+.modal.is-open .result__grid .stat:nth-child(4) { animation-delay: 0.54s; }
+.modal.is-open .card > .btn { animation: rise 0.45s both 0.6s; }
+
+/* HUD feedback */
+.hud__score-value { transform-origin: left center; }
+.bump { animation: bump 0.32s ease-out; }
+.just-lost { animation: life-pop 0.6s ease-out; }
+.hud-hit { animation: hud-hit 0.45s ease-out; }
+.pulse { animation: chip-pulse 0.6s ease-out; }
+.chip--tiny.bump { transform-origin: center; }
+
+/* arena state cues */
+.arena[data-state='levelclear'] { animation: arena-glow 1s ease-in-out infinite; }
+.arena canvas { transition: filter 0.25s; }
+.arena[data-state='paused'] canvas { filter: saturate(0.55) brightness(0.7); }
+
+/* settings */
+.tile[aria-checked='true'], .swatch[aria-checked='true'] { animation: tile-pop 0.28s ease-out; }
+
+/* off switch */
+html[data-anim='off'] *, html[data-anim='off'] *::before, html[data-anim='off'] *::after {
+  animation: none !important; transition: none !important;
+}
