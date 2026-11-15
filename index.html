@@ -13,6 +13,8 @@
   <link rel="stylesheet" href="base.css">
   <link rel="stylesheet" href="components.css">
   <link rel="stylesheet" href="screens.css">
+  <link rel="stylesheet" href="settings.css">
+  <link rel="stylesheet" href="animations.css">
 </head>
 <body>
   <div class="bg-grid" aria-hidden="true"></div>
@@ -20,12 +22,10 @@
   <header class="app-header">
     <div class="app-header__inner">
       <div class="brand"><span class="icon icon--fill">sports_esports</span><span>BRICK BREAKER</span></div>
-      <span class="chip chip--purple">v0.2 </span>
     </div>
   </header>
 
   <main class="app">
-
     <!-- MAIN MENU -->
     <section id="screen-menu" class="screen is-active" aria-label="Main menu">
       <div class="menu-status">
@@ -119,15 +119,24 @@
           </div>
         </div>
 
-        <div id="arena" class="arena" data-state="idle">
-          <canvas id="game-canvas" aria-label="Brick Breaker game board"></canvas>
-          <div class="launch-hint" aria-hidden="true">SPACE / CLICK / TAP TO LAUNCH</div>
+        <div class="stage">
+          <div id="arena" class="arena" data-state="idle">
+            <canvas id="game-canvas" aria-label="Brick Breaker game board"></canvas>
+            <div class="launch-hint" aria-hidden="true">SPACE / CLICK / TAP TO LAUNCH</div>
+          </div>
+
+          <p class="controls-hint">
+            <span class="hint-kbd"><span class="k">← →</span> move · <span class="k">SPACE</span> launch · <span class="k">P</span> pause · <span class="k">M</span> mute · <span class="k">R</span> restart</span>
+            <span class="hint-touch">Drag to move · <span class="k">tap</span> to launch</span>
+          </p>
         </div>
 
-        <p class="controls-hint">
-          <span class="hint-kbd"><span class="k">← →</span> move · <span class="k">SPACE</span> launch · <span class="k">P</span> pause · <span class="k">M</span> mute · <span class="k">R</span> restart</span>
-          <span class="hint-touch">Drag to move · <span class="k">tap</span> to launch</span>
-        </p>
+        <aside class="briefing" aria-label="Briefing">
+          <h3 class="briefing__title"><span class="icon">grid_view</span>BRICKS</h3>
+          <ul class="legend" data-legend="bricks"></ul>
+          <h3 class="briefing__title"><span class="icon">bolt</span>POWER-UPS</h3>
+          <ul class="legend" data-legend="powerups"></ul>
+        </aside>
       </div>
     </section>
   </main>
@@ -143,33 +152,83 @@
         <li><span class="icon tip-cyan">keyboard</span><p><b>Keyboard:</b> use <kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd> to slide the paddle.</p></li>
         <li><span class="icon tip-lav">mouse</span><p><b>Mouse &amp; touch:</b> move the pointer (or drag a finger) over the board to steer the paddle.</p></li>
         <li><span class="icon tip-pink">rocket_launch</span><p><b>Launch:</b> press <kbd>Space</kbd>, click or tap to fire the ball. Where it lands on the paddle sets its angle.</p></li>
-        <li><span class="icon tip-yellow">bolt</span><p><b>Power-ups:</b> catch falling capsules — <b>WIDE</b> grows your paddle, <b>3-BALL</b> splits every ball, <b>SLOW</b> slows the ball for a while.</p></li>
         <li><span class="icon tip-cyan">flag</span><p><b>Goal:</b> clear all 5 sectors. Lose every ball and you lose a life; lose all 3 and it's game over.</p></li>
         <li><span class="icon tip-lav">keyboard_command_key</span><p><b>Shortcuts:</b> <kbd>P</kbd> or <kbd>Esc</kbd> pause, <kbd>M</kbd> mute, <kbd>R</kbd> restart.</p></li>
       </ul>
+      <h3 class="howto__sub">BRICK TYPES</h3>
+      <ul class="legend" data-legend="bricks"></ul>
+      <h3 class="howto__sub">POWER-UPS</h3>
+      <ul class="legend" data-legend="powerups"></ul>
       <button class="btn btn--primary btn--sm" data-close data-autofocus>GOT IT, LET'S BREAK</button>
     </div>
   </div>
 
   <div id="modal-settings" class="modal" data-backdrop-close role="dialog" aria-modal="true" aria-labelledby="settings-title" aria-hidden="true">
-    <div class="card">
+    <div class="card card--settings">
       <header class="card__head">
-        <h2 id="settings-title"><span class="icon">tune</span>CALIBRATION</h2>
+        <h2 id="settings-title"><span class="icon">tune</span>CALIBRATION &amp; SKINS</h2>
         <button class="icon-btn icon-btn--sm" data-close aria-label="Close"><span class="icon">close</span></button>
       </header>
 
+      <div class="preview-box">
+        <span class="preview-box__tag">LIVE PREVIEW</span>
+        <canvas id="settings-preview" aria-label="Live preview of your settings"></canvas>
+      </div>
+
       <section class="setting">
+        <h3 class="setting__title"><span class="icon">graphic_eq</span>Audio</h3>
+        <div class="setting__row"><label for="set-vol">Master volume</label><output id="set-vol-val" for="set-vol">80%</output></div>
+        <input id="set-vol" type="range" min="0" max="100" step="5" value="80">
+        <button class="btn btn--ghost btn--sm btn--inline" data-sound-toggle aria-pressed="true"><span class="icon js-sound-icon">volume_up</span>SOUND EFFECTS: <span class="js-sound-label">ON</span></button>
+      </section>
+
+      <section class="setting">
+        <h3 class="setting__title"><span class="icon">palette</span>Background ambience</h3>
+        <div id="set-theme" class="tiles tiles--2" role="radiogroup" aria-label="Background theme"></div>
+      </section>
+
+      <section class="setting">
+        <h3 class="setting__title"><span class="icon">colorize</span>HUD beam colour</h3>
+        <div id="set-accent" class="swatches" role="radiogroup" aria-label="Accent colour"></div>
+      </section>
+
+      <section class="setting">
+        <h3 class="setting__title"><span class="icon">horizontal_rule</span>Paddle rig</h3>
+        <div id="set-paddle" class="tiles tiles--2" role="radiogroup" aria-label="Paddle style"></div>
+      </section>
+
+      <section class="setting">
+        <h3 class="setting__title"><span class="icon">circle</span>Ball core</h3>
+        <div id="set-ball" class="tiles tiles--4" role="radiogroup" aria-label="Ball style"></div>
+      </section>
+
+      <section class="setting">
+        <h3 class="setting__title"><span class="icon">grid_view</span>Brick material</h3>
+        <div id="set-brick" class="tiles tiles--2" role="radiogroup" aria-label="Brick material"></div>
+      </section>
+
+      <section class="setting">
+        <h3 class="setting__title"><span class="icon">auto_awesome</span>Effects &amp; feedback</h3>
+        <div class="setting__row"><span id="lbl-particles">Particles &amp; animations</span></div>
+        <div id="set-particles" class="segs" role="radiogroup" aria-labelledby="lbl-particles"></div>
+        <div class="setting__row setting__row--switch"><span id="lbl-shake">Screen shake</span><button type="button" class="switch" role="switch" data-key="shake" aria-labelledby="lbl-shake" aria-checked="true"><i></i></button></div>
+        <div class="setting__row setting__row--switch"><span id="lbl-haptics">Vibration (phones)</span><button type="button" class="switch" role="switch" data-key="haptics" aria-labelledby="lbl-haptics" aria-checked="true"><i></i></button></div>
+        <div class="setting__row setting__row--switch"><span id="lbl-uianim">Menu &amp; HUD animations</span><button type="button" class="switch" role="switch" data-key="uiAnim" aria-labelledby="lbl-uianim" aria-checked="true"><i></i></button></div>
+      </section>
+
+      <section class="setting">
+        <h3 class="setting__title"><span class="icon">sports_esports</span>Control sensors</h3>
         <div class="setting__row">
           <label for="set-sens">Keyboard paddle speed</label>
           <output id="set-sens-val" for="set-sens">1.00x</output>
         </div>
         <input id="set-sens" type="range" min="0.5" max="2" step="0.25" value="1">
         <div class="setting__scale"><span>0.5x Precise</span><span>1.0x Standard</span><span>2.0x Hyper</span></div>
-        <p class="setting__note">Mouse and touch always move the paddle directly. Changes save automatically.</p>
+        <p class="setting__note">Mouse and touch always move the paddle directly. Every change applies instantly and is saved automatically.</p>
       </section>
 
-      <div class="card__actions">
-        <button id="btn-settings-reset" class="btn btn--ghost btn--sm">RESET</button>
+      <div class="card__actions card__actions--sticky">
+        <button id="btn-settings-reset" class="btn btn--ghost btn--sm">RESET ALL</button>
         <button class="btn btn--primary btn--sm" data-close data-autofocus>DONE</button>
       </div>
     </div>
@@ -225,6 +284,8 @@
   <script src="config.js"></script>
   <script src="utils.js"></script>
   <script src="storage.js"></script>
+  <script src="styles.js"></script>
+  <script src="settings.js"></script>
   <script src="audio.js"></script>
   <script src="levels.js"></script>
   <script src="physics.js"></script>
@@ -232,8 +293,10 @@
   <script src="paddle.js"></script>
   <script src="ball.js"></script>
   <script src="brick.js"></script>
+  <script src="particles.js"></script>
   <script src="input.js"></script>
   <script src="renderer.js"></script>
+  <script src="preview.js"></script>
   <script src="game.js"></script>
   <script src="ui.js"></script>
   <script src="main.js"></script>
