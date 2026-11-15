@@ -250,7 +250,7 @@
 
 /* RESULTS MODAL */
 #modal-result {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  flex-direction: column; align-items: center; justify-content: center;
   gap: 12px; width: 100%; padding: 12px; box-sizing: border-box;
 }
 #modal-result .card--result {
@@ -284,7 +284,7 @@
 
 /* EQUAL ACTION BUTTONS */
 #modal-result > .btn {
-  display: flex; align-items: center; justify-content: center;
+  align-items: center; justify-content: center;
   width: 100%; max-width: 440px; min-width: 0;
   height: 64px; min-height: 64px; flex: none;
   box-sizing: border-box; white-space: normal; text-align: center;
