@@ -247,3 +247,60 @@
 @media (min-width: 1180px) and (min-height: 560px) {
   .briefing { display: flex; }
 }
+
+/* RESULTS MODAL */
+#modal-result {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; width: 100%; padding: 12px; box-sizing: border-box;
+}
+#modal-result .card--result {
+  width: 100%; max-width: 440px; max-height: calc(100dvh - 180px);
+  box-sizing: border-box; overflow-x: hidden; overflow-y: auto;
+  padding: clamp(14px, 4vw, 24px); gap: clamp(10px, 3vw, 14px);
+}
+#modal-result .result__title {
+  font-size: clamp(1.7rem, 7vw, 2.5rem); line-height: 1.1; overflow-wrap: break-word;
+}
+#modal-result .result__score {
+  width: 100%; min-width: 0; box-sizing: border-box;
+}
+#modal-result .result__score output {
+  font-size: clamp(2rem, 10vw, 3.2rem); overflow-wrap: anywhere;
+}
+#modal-result .result__grid--2 {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px; width: 100%;
+}
+#modal-result .result__grid .stat {
+  min-width: 0; box-sizing: border-box; padding: 12px 6px;
+}
+#modal-result .result__grid .stat__label {
+  justify-content: center; text-align: center; flex-wrap: wrap;
+  font-size: clamp(0.6rem, 2.5vw, 0.6875rem); letter-spacing: 0.08em;
+}
+#modal-result .result__grid .stat__value {
+  font-size: clamp(0.9rem, 4vw, 1.1rem); overflow-wrap: anywhere;
+}
+
+/* EQUAL ACTION BUTTONS */
+#modal-result > .btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; max-width: 440px; min-width: 0;
+  height: 64px; min-height: 64px; flex: none;
+  box-sizing: border-box; white-space: normal; text-align: center;
+}
+
+/* EXTRA-SMALL PHONES */
+@media (max-width: 360px) {
+  #modal-result { padding: 8px; gap: 10px; }
+  #modal-result .card--result { padding: 14px 12px; }
+  #modal-result .result__title { font-size: 1.65rem; }
+  #modal-result .result__grid--2 { gap: 6px; }
+  #modal-result > .btn { height: 58px; min-height: 58px; padding: 10px; font-size: 0.85rem; }
+}
+
+/* SHORT MOBILE SCREENS */
+@media (max-height: 600px) {
+  #modal-result { justify-content: flex-start; }
+  #modal-result .card--result { max-height: calc(100dvh - 160px); }
+}
