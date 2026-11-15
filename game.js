@@ -12,7 +12,8 @@
     this.onHud = opts.onHud || noop;
     this.onEnd = opts.onEnd || noop;
     this.onSound = opts.onSound || noop;
-    this.rng = Math.random;                 // swappable
+    this.rng = Math.random;
+    this.fx = opts.fx || new BB.Effects();
 
     this.width = C.canvas.width;
     this.height = C.canvas.height;
@@ -20,11 +21,11 @@
     this.balls = [];
     this.bricks = [];
     this.capsules = [];
-    this.effects = { expand: 0, slow: 0 };   // seconds remaining
+    this.effects = { expand: 0, slow: 0 };
 
     this.totalBricks = 0;
     this.bricksLeft = 0;
-    this.bricksDestroyed = 0;                // across the whole run
+    this.bricksDestroyed = 0;
 
     this.state = 'idle';
     this.paused = false;
@@ -56,7 +57,7 @@
 
   /* run control */
 
-  /** Start (or restart) a fresh run at level 1. */
+  /** Start */
   BB.Game.prototype.newGame = function () {
     this.score = 0;
     this.lives = C.lives;
@@ -64,6 +65,7 @@
     this.bricksDestroyed = 0;
     this.paused = false;
     this.input.reset();
+    this.fx.clear();
     this._beginLevel();
     this._emitHud();
     this._startLoop();
@@ -73,7 +75,7 @@
   BB.Game.prototype._beginLevel = function () {
     var level = BB.LEVELS[this.levelIndex];
     this.bricks = BB.buildBricks(level, C.bricks, this.width);
-    this.totalBricks = this.bricks.length;
+    this.totalBricks = this.bricks.filter(function (b) { return !b.solid; }).length;   // steel doesn't count
     this.bricksLeft = this.totalBricks;
     this._resetEffects();
     this.speedRamp = 0;
@@ -88,15 +90,16 @@
     this._setBanner(level.name, 'LEVEL ' + pad2(this.levelIndex + 1) + ' / ' + pad2(BB.LEVELS.length), T.bannerIntro, false);
   };
 
-  /** Leave the game screen (back to menu). */
+  /** Leave the game screen */
   BB.Game.prototype.stop = function () {
     if (this._raf) cancelAnimationFrame(this._raf);
     this._raf = 0;
     this.state = 'idle';
     this.paused = false;
+    this.fx.clear();
   };
 
-  /** Launch the ball (or skip the level-cleared pause). */
+  /** Launch the ball */
   BB.Game.prototype.launch = function () {
     if (this.paused) return;
     if (this.state === 'levelclear') {
@@ -107,6 +110,7 @@
     this.balls[0].launch(this._targetSpeed());
     this.state = 'playing';
     this.onSound('launch');
+    this.fx.emit('launch', { x: this.balls[0].x, y: this.balls[0].y });
     this._emitHud();
   };
 
@@ -122,7 +126,7 @@
     return true;
   };
 
-  /** Resume. If the ball was in play, a short 3-2-1 gives you time to react. */
+  /** Resume */
   BB.Game.prototype.resume = function () {
     if (!this.paused) return;
     this.paused = false;
@@ -153,15 +157,17 @@
 
   BB.Game.prototype._frame = function (now) {
     this._raf = requestAnimationFrame(this._frame);
-    var dt = clamp((now - this._last) / 1000, 0, 1 / 30);
+    var dt = clamp((now - this._last) / 1000, 0, 1 / 30);   // never jump more than 1/30s
     this._last = now;
     this.update(dt);
     this.renderer.draw(this);
   };
 
-  /** Advance the game by dt seconds */
+  /* Advance the game by dt seconds */
   BB.Game.prototype.update = function (dt) {
     if (this.paused) return;
+
+    this._animate(dt);
 
     // banner fades on real time
     if (this.banner) {
@@ -178,7 +184,7 @@
       var sens = BB.Storage.get('sensitivity') || 1;
       this.paddle.moveBy(dir * C.paddle.keyboardSpeed * sens * dt);
     }
-    if (dt > 0) this._paddleVx += ((this.paddle.x - oldX) / dt - this._paddleVx) * 0.4;
+    if (dt > 0) this._paddleVx += ((this.paddle.x - oldX) / dt - this._paddleVx) * 0.4;   // smoothed, for "english"
     this.paddle.update(dt, PU.paddleGrowSpeed);
 
     if (this.state === 'ready') { this.balls[0].attachTo(this.paddle); return; }
@@ -204,7 +210,6 @@
       if (this.effects.slow < 0) this.effects.slow = 0;
     }
 
-    // physics runs at a fixed step so it behaves the same at 30, 60 or 144 fps
     this._accum += dt;
     var h = P.fixedStep, guard = 0;
     while (this._accum >= h && this.state === 'playing' && guard++ < 16) {
@@ -212,6 +217,26 @@
       this._accum -= h;
     }
     if (this.state !== 'playing') this._accum = 0;
+  };
+
+  /* Visual-only timers */
+  BB.Game.prototype._animate = function (dt) {
+    this.fx.update(dt);
+    var i, b, introT = C.effects.brickIntro;
+    for (i = 0; i < this.bricks.length; i++) {
+      b = this.bricks[i];
+      if (b.spawn < introT) b.spawn += dt;
+      if (b.hitT > 0) b.hitT = Math.max(0, b.hitT - dt * 6);
+    }
+    for (i = 0; i < this.balls.length; i++) {
+      b = this.balls[i];
+      if (b.attached) { b.trail.length = 0; continue; }
+      var last = b.trail[b.trail.length - 1];
+      if (!last || Math.abs(b.x - last.x) + Math.abs(b.y - last.y) > 3) {
+        b.trail.push({ x: b.x, y: b.y });
+        if (b.trail.length > C.effects.trailLength) b.trail.shift();
+      }
+    }
   };
 
   /* physics step */
@@ -228,6 +253,7 @@
     for (var i = this.balls.length - 1; i >= 0; i--) {
       var b = this.balls[i];
       this._steer(b, target, h);
+      b.idle += h;
       b.x += b.vx * h;
       b.y += b.vy * h;
 
@@ -243,7 +269,14 @@
     if (this.balls.length === 0 && this.state === 'playing') this._loseLife();
   };
 
-  /** Ease a ball's speed toward the target*/
+  /* Stall breaker */
+  BB.Game.prototype._unstall = function (b) {
+    if (b.idle <= P.stallTime) return;
+    var lo = P.stallNudgeDeg[0], hi = P.stallNudgeDeg[1];
+    Physics.steepen(b, lo + this.rng() * (hi - lo));
+  };
+
+  /* Ease a ball's speed toward the target */
   BB.Game.prototype._steer = function (b, target, h) {
     var s = Physics.speedOf(b);
     if (s === 0 || Math.abs(s - target) < 0.01) return;
@@ -258,8 +291,10 @@
     else if (b.x + b.r > this.width)    { b.x = this.width - b.r;  b.vx = -Math.abs(b.vx); bounced = true; }
     if (b.y - b.r < 0)                  { b.y = b.r;               b.vy =  Math.abs(b.vy); bounced = true; }
     if (bounced) {
+      this._unstall(b);
       Physics.enforceMinVertical(b, P.minVerticalRatio);
       this.onSound('wall');
+      this.fx.emit('wall', { x: b.x, y: b.y });
     }
   };
 
@@ -276,10 +311,11 @@
     b.vx = speed * Math.sin(angle);
     b.vy = -speed * Math.cos(angle);
     b.y = p.y - b.r;
+    b.idle = 0;
     this.onSound('paddle');
+    this.fx.emit('paddle', { x: b.x, y: p.y });
   };
 
-  /** Returns true if a brick was hit. */
   BB.Game.prototype._collideBricks = function (b) {
     var best = null, brick = null;
     for (var i = 0; i < this.bricks.length; i++) {
@@ -295,25 +331,66 @@
     b.y = best.py + best.ny * b.r;
     Physics.enforceMinVertical(b, P.minVerticalRatio);
 
+    if (brick.solid) {
+      this._unstall(b);
+      this.onSound('clink');
+      this.fx.emit('solidHit', { x: best.px, y: best.py });
+      return true;
+    }
+
+    b.idle = 0;
+    this._hitBrick(brick, 1, 0, best.px, best.py);
+    if (this.bricksLeft === 0) this._levelCleared();
+    else this._emitHud();
+    return true;
+  };
+
+  BB.Game.prototype._hitBrick = function (brick, damage, depth, px, py) {
+    brick.hp -= damage;
+    if (brick.hp > 0) {
+      brick.hitT = 1;
+      this.onSound('hit', { hp: brick.hp, max: brick.maxHp });
+      this.fx.emit('brickHit', { x: px, y: py, color: brick.color });
+      return;
+    }
+    this._destroyBrick(brick, depth);
+  };
+
+  BB.Game.prototype._destroyBrick = function (brick, depth) {
     brick.alive = false;
+    brick.hp = 0;
     this.bricksLeft--;
     this.bricksDestroyed++;
     this.score += brick.points;
     this.speedRamp = Math.min(P.speedRamp.max, this.speedRamp + P.speedRamp.perBrick);
-    this.onSound('brick', { points: brick.points });
 
-    if (this.bricksLeft === 0) {
-      this._levelCleared();
-    } else {
-      this._maybeDrop(brick);
-      this._emitHud();
+    var boom = brick.behavior === 'explode';
+    this.onSound(boom ? 'explode' : 'brick', { points: brick.points });
+    this.fx.emit('brickBreak', {
+      x: brick.x + brick.w / 2, y: brick.y + brick.h / 2, w: brick.w, h: brick.h,
+      color: brick.color, points: brick.points, depth: depth, kind: brick.kind
+    });
+    this._maybeDrop(brick, brick.behavior === 'gift');
+    if (boom) this._explode(brick, depth);
+  };
+
+  /** Explosive brick */
+  BB.Game.prototype._explode = function (brick, depth) {
+    var cx = brick.x + brick.w / 2, cy = brick.y + brick.h / 2;
+    this.fx.emit('explosion', { x: cx, y: cy, depth: depth });
+    var reach = C.bricks.blastReach;
+    for (var i = 0; i < this.bricks.length; i++) {
+      var nb = this.bricks[i];
+      if (!nb.alive || nb.solid || nb === brick) continue;
+      if (Math.abs(nb.row - brick.row) <= reach && Math.abs(nb.col - brick.col) <= reach) {
+        this._hitBrick(nb, C.bricks.blastDamage, depth + 1, cx, cy);
+      }
     }
-    return true;
   };
 
   /* power-ups */
-  BB.Game.prototype._maybeDrop = function (brick) {
-    if (this.rng() >= PU.dropChance) return;
+  BB.Game.prototype._maybeDrop = function (brick, force) {
+    if (!force && this.rng() >= PU.dropChance) return;
     this.capsules.push({
       x: brick.x + brick.w / 2,
       y: brick.y + brick.h / 2,
@@ -331,12 +408,13 @@
       if (c.y - c.h / 2 > this.height) { this.capsules.splice(i, 1); continue; }
       var overlap = c.y + c.h / 2 >= p.y && c.y - c.h / 2 <= p.y + p.h &&
                     c.x + c.w / 2 >= p.x && c.x - c.w / 2 <= p.x + p.w;
-      if (overlap) { this.capsules.splice(i, 1); this._collect(c.type); }
+      if (overlap) { this.capsules.splice(i, 1); this._collect(c.type, c); }
     }
   };
 
-  BB.Game.prototype._collect = function (type) {
+  BB.Game.prototype._collect = function (type, c) {
     this.onSound('powerup');
+    this.fx.emit('powerup', { x: c ? c.x : this.paddle.centerX, y: c ? c.y : this.paddle.y, color: BB.PowerUps.TYPES[type].color });
     if (type === 'expand') {
       this.effects.expand = PU.expand.duration;            // re-collecting refreshes the timer
       this.paddle.setTargetWidth(this.paddle.baseW * PU.expand.factor);
@@ -347,7 +425,7 @@
     }
   };
 
-  /** Split every ball into three */
+  /* Split every ball into three */
   BB.Game.prototype._multiBall = function () {
     var sources = this.balls.slice();
     var angles = [0.38, -0.38];
@@ -377,6 +455,7 @@
   BB.Game.prototype._loseLife = function () {
     this.lives--;
     this.onSound('life');
+    this.fx.emit('lifeLost', {});
     this._resetEffects();
     this.speedRamp = 0;
     if (this.lives <= 0) {
@@ -403,6 +482,7 @@
     this.state = 'levelclear';
     this._levelTimer = T.levelClear;
     this.onSound('clear');
+    this.fx.emit('levelClear', {});
     this._setBanner(level.name + ' CLEARED', 'GET READY', 0, true);
     this._emitHud();
   };
@@ -417,6 +497,7 @@
     this.state = kind;
     this.balls = [];
     this.onSound(kind);
+    if (kind === 'victory') this.fx.emit('victory', {});
     var rec = BB.Storage.recordGame(this.score, kind === 'victory');
     this._emitHud();
     this.onEnd({
