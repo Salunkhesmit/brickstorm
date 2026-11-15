@@ -8,17 +8,21 @@
     this.x = 0; this.y = 0;
     this.vx = 0; this.vy = 0;
     this.attached = true;
+    this.trail = [];
+    this.idle = 0;
   };
 
-  /** Park the ball on top of the paddle. */
+  /* Park the ball on top of the paddle. */
   BB.Ball.prototype.attachTo = function (paddle) {
     this.attached = true;
+    this.trail.length = 0;
+    this.idle = 0;
     this.vx = 0; this.vy = 0;
     this.x = paddle.centerX;
     this.y = paddle.y - this.r - 1;
   };
 
-  /** Fire upward at a small random angle. `speed` overrides the default. */
+  /* Fire upward at a small random angle. `speed` overrides the default. */
   BB.Ball.prototype.launch = function (speed) {
     if (!this.attached) return;
     var s = speed || this.speed;
