@@ -283,7 +283,7 @@
 }
 
 /* EQUAL ACTION BUTTONS */
-#modal-result > .btn {
+#modal-result .card--result > .btn {
   align-items: center; justify-content: center;
   width: 100%; max-width: 440px; min-width: 0;
   height: 64px; min-height: 64px; flex: none;
@@ -296,7 +296,7 @@
   #modal-result .card--result { padding: 14px 12px; }
   #modal-result .result__title { font-size: 1.65rem; }
   #modal-result .result__grid--2 { gap: 6px; }
-  #modal-result > .btn { height: 58px; min-height: 58px; padding: 10px; font-size: 0.85rem; }
+  #modal-result .card--result > .btn { height: 58px; min-height: 58px; padding: 10px; font-size: 0.85rem; }
 }
 
 /* SHORT MOBILE SCREENS */
