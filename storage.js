@@ -6,6 +6,7 @@
     games: 0,
     wins: 0,
     muted: false,
+    settings: {},
     sensitivity: BB.CONFIG.settings.sensitivity.default
   };
   var data = Object.assign({}, defaults);
@@ -27,6 +28,7 @@
     get: function (key) { return data[key]; },
     set: function (key, value) { data[key] = value; save(); },
 
+    /** Call once when a run ends */
     recordGame: function (score, won) {
       var isNewBest = score > data.best;
       if (isNewBest) data.best = score;
